@@ -20,7 +20,10 @@
     </div>
     <div class="col col-9">
         <h5>{{ rooms.count }} rooms available</h5>
+
+        {% if request.user.is_authenticated %}
         <a href="{% url 'base:create' %}">Create Room</a>
+        {% endif %}
         {% for room in rooms %}
         <div style="background:#77777750; border 2px solid #44444450; border-radius:15px;margin: 15px;padding:15px">
             {% if room.host.id == request.user.id %}

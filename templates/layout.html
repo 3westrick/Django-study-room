@@ -11,6 +11,13 @@
 {% include 'nav.html'%}
 
 <div class="container">
+    <div>
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
     {% block content%}
     {% endblock %}
 </div>

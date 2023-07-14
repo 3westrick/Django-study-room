@@ -5,6 +5,12 @@
     <form action="{% url 'base:rooms' %}">
         <input placeholder="Search Rooms..." name="search" type="text">
     </form>
+    {% if request.user.is_authenticated %}
+    hello {{ request.user.username }}
+    <a href="{% url 'base:logout' %}">Logout</a>
+    {% else %}
+    <a href="{% url 'base:login' %}">Login</a>
+    {% endif %}
     <a href="{% url 'base:rooms' %}">Rooms</a>
 </div>
 <hr>
