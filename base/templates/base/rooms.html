@@ -6,10 +6,14 @@
 <h1>List of rooms :</h1>
 {% for room in rooms %}
 <div style="background:#77777750; border 2px solid #44444450; border-radius:15px;margin: 15px;padding:15px">
+    {% if room.host.id == request.user.id %}
+    <a href="{% url 'base:edit' room.id %}">Edit room</a>
+    <a href="{% url 'base:delete' room.id %}">Delete room</a>
+    {% endif %}
     <p>@{{ room.host.username }}</p>
     <h5>{{ room.id }} -- <a href="{% url 'base:room' room.id %}">{{ room.name }}</a></h5>
     <small>{{ room.topic }}</small>
 </div>
-{% endfor %}
 
+{% endfor %}
 {% endblock %}
