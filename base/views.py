@@ -79,7 +79,17 @@ def rooms(request):
 
 def room(request, pk):
     room_item = get_object_or_404(Room, pk=pk)
-    return render(request, 'base/room.html', {'room': room_item})
+    room_messages = room_item.roommessage_set.all()  # one to many use lowercase and _set
+    members = room_item.members.all()  # u can use filter here too
+    if request.method == 'POST':
+        message = RoomMessage.objects.create(
+            user=request.user,
+            room=room_item,
+            text=request.POST.get('text')
+        )
+        return redirect('base:room', pk=room_item.id)
+    room_item.members.add(request.user)
+    return render(request, 'base/room.html', {'room': room_item, 'room_messages': room_messages, 'members': members})
 
 
 @login_required
@@ -111,7 +121,7 @@ def edit(request, pk):
 
 
 @login_required
-def delete(request, pk):
+def delete_room(request, pk):
     room_item = get_object_or_404(Room, pk=pk)
     if request.user != room_item.host:
         return HttpResponse("You are not allowed here!!")
@@ -119,3 +129,14 @@ def delete(request, pk):
         room_item.delete()
         return redirect('base:index')
     return render(request, 'base/delete.html', {'obj': room_item})
+
+
+@login_required
+def delete_msg(request, pk):
+    msg = get_object_or_404(RoomMessage, pk=pk)
+    if request.user != msg.user:
+        return HttpResponse("You are not allowed here!!")
+    if request.method == 'POST':
+        msg.delete()
+        return redirect('base:index')
+    return render(request, 'base/delete.html', {'obj': msg})

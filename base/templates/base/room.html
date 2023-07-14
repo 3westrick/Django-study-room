@@ -3,7 +3,43 @@
 
 {% block content %}
 
-<h1>Rooms #{{ room.id }}</h1>
-<h3>Room name : {{ room.name }}</h3>
+
+<div class="row">
+    <div class="col col-9">
+        <h1>Rooms #{{ room.id }}</h1>
+        <h3>Room name : {{ room.name }}</h3>
+        <p>{{ room.description }}</p>
+        <div>
+            <h3>Conversation</h3>
+            <hr>
+            {% for msg in room_messages%}
+            <div>
+                {% if request.user == msg.user %}
+                <a href="{% url 'base:delete-msg' msg.id %}">Delete</a>
+                {%endif%}
+                <small>@{{ msg.user }} {{msg.created|timesince}} ago</small>
+                <p>{{ msg.text }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if request.user.is_authenticated %}
+        <div>
+            <form method="post">
+                {% csrf_token %}
+                <input name="text" type="text" placeholder="Write your message">
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col col-3">
+        <h3>
+            Members
+        </h3>
+        {%for member in members%}
+        <p>@{{member.username}}</p>
+        {%endfor%}
+    </div>
+</div>
 
 {% endblock %}
