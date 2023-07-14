@@ -1,7 +1,7 @@
 <h3>recent activity</h3>
 {% for msg in room_messages%}
 <div class="border">
-    <small>@{{ msg.user }} {{ msg.created|timesince }} ago</small>
+    <small><a href="{% url 'base:profile' msg.user.id %}">@{{ msg.user }}</a> {{ msg.created|timesince }} ago</small>
     <br>
     <small>Replied to "{{ msg.room }}"</small>
     <p>{{ msg }}</p>

@@ -12,6 +12,19 @@ from django.db.models import Q
 
 # Create your views here.
 
+def profile(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    rooms_list = user.room_set.all()
+    room_messages = user.roommessage_set.all()
+    topics = get_list_or_404(Topic)
+    return render(request, 'base/profile.html', {
+        'user': user,
+        'rooms': rooms_list,
+        'room_messages': room_messages,
+        'topics': topics
+    })
+
+
 def signin(request):
     page = 'login'
     if request.user.is_authenticated:
