@@ -6,35 +6,19 @@
 <h1>List of rooms :</h1>
 
 <div class="row">
-    <div class="col col-3">
-        <h3>Browse Topics</h3>
-        <hr>
-        <div>
-            <a href="{% url 'base:rooms' %}">All</a>
-        </div>
-        {% for topic in topics %}
-        <div>
-            <a href="{% url 'base:rooms' %}?search={{topic}}">{{ topic }}</a>
-        </div>
-        {% endfor %}
+    <div class="col col-2">
+        {% include 'base/topics_component.html'%}
     </div>
-    <div class="col col-9">
+    <div class="col col-7">
         <h5>{{ rooms.count }} rooms available</h5>
 
         {% if request.user.is_authenticated %}
         <a href="{% url 'base:create' %}">Create Room</a>
         {% endif %}
-        {% for room in rooms %}
-        <div style="background:#77777750; border 2px solid #44444450; border-radius:15px;margin: 15px;padding:15px">
-            {% if room.host.id == request.user.id %}
-            <a href="{% url 'base:edit' room.id %}">Edit room</a>
-            <a href="{% url 'base:delete-room' room.id %}">Delete room</a>
-            {% endif %}
-            <p>@{{ room.host.username }}</p>
-            <h5>{{ room.id }} -- <a href="{% url 'base:room' room.id %}">{{ room.name }}</a></h5>
-            <small>{{ room.topic }}</small>
-        </div>
-        {% endfor %}
+        {% include 'base/rooms_component.html'%}
+    </div>
+    <div class="col col-3">
+        {% include 'base/activity_component.html'%}
     </div>
 </div>
 

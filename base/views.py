@@ -70,10 +70,12 @@ def rooms(request):
     else:
         room_list = Room.objects.all()
     topics = get_list_or_404(Topic)
+    room_messages = RoomMessage.objects.filter(Q(room__name__icontains=search) | Q(room__topic__name__icontains=search))
     return render(request, 'base/rooms.html', {
         'rooms': room_list,
         'topics': topics,
         'search': search,
+        'room_messages': room_messages,
     })
 
 
