@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<form method="post">
+  {% csrf_token %}
+  <p>Are you sure u want to delete "{{obj}}" ?</p>
+  <a href="{{ request.META.HTTP_REFERER }}">Go back</a>
+  <button>
+    Submit
+  </button>
+</form>
+
+{% endblock %}

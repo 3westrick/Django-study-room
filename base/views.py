@@ -5,18 +5,49 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .models import Room, Topic, RoomMessage
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Q
 
 
 # Create your views here.
+def topicsPage(request):
+    search = request.GET.get('search', '')
+    if search:
+        topics = Topic.objects.filter(
+            Q(name__icontains=search)
+        )
+    else:
+        topics = Topic.objects.all()
+    return render(request, 'base/topics.html', {'topics': topics})
 
+
+def activotyPage(request):
+    room_messages = RoomMessage.objects.all()
+    return render(request, 'base/activity.html', {'room_messages': room_messages})
+
+
+@login_required
+def edit_profile(request):
+    user = request.user
+    form = UserForm(instance=user)
+    if request.method == "POST":
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect("base:profile", user.id)
+    return render(request, 'base/edit_profile.html', {
+        'user': user,
+        'form': form,
+    })
+
+
+@login_required
 def profile(request, pk):
     user = get_object_or_404(User, pk=pk)
     rooms_list = user.room_set.all()
     room_messages = user.roommessage_set.all()
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[:5]
     return render(request, 'base/profile.html', {
         'user': user,
         'rooms': rooms_list,
@@ -82,7 +113,7 @@ def rooms(request):
         )
     else:
         room_list = Room.objects.all()
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[:5]
     room_messages = RoomMessage.objects.filter(Q(room__name__icontains=search) | Q(room__topic__name__icontains=search))
     return render(request, 'base/new_rooms.html', {
         'rooms': room_list,
