@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<h1>{{ user.username }}</h1>
+<div class="row">
+    <div class="col col-2">
+        {% include 'base/topics_component.html'%}
+    </div>
+    <div class="col col-7">
+        {% include 'base/rooms_component.html'%}
+    </div>
+    <div class="col col-3">
+        {% include 'base/activity_component.html'%}
+    </div>
+</div>
+{% endblock %}

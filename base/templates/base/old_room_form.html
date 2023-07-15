@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+{% block title %}Create Room{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button>Submit</button>
+</form>
+{% endblock %}

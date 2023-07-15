@@ -16,7 +16,7 @@ def profile(request, pk):
     user = get_object_or_404(User, pk=pk)
     rooms_list = user.room_set.all()
     room_messages = user.roommessage_set.all()
-    topics = get_list_or_404(Topic)
+    topics = Topic.objects.all()
     return render(request, 'base/profile.html', {
         'user': user,
         'rooms': rooms_list,
@@ -68,7 +68,7 @@ def signup(request):
 
 
 def index(request):
-    return render(request, 'base/index.html')
+    return redirect("base:rooms")
 
 
 def rooms(request):
@@ -82,9 +82,9 @@ def rooms(request):
         )
     else:
         room_list = Room.objects.all()
-    topics = get_list_or_404(Topic)
+    topics = Topic.objects.all()
     room_messages = RoomMessage.objects.filter(Q(room__name__icontains=search) | Q(room__topic__name__icontains=search))
-    return render(request, 'base/rooms.html', {
+    return render(request, 'base/new_rooms.html', {
         'rooms': room_list,
         'topics': topics,
         'search': search,
@@ -110,29 +110,52 @@ def room(request, pk):
 @login_required
 def create(request):
     form = RoomForm()
+    topics = Topic.objects.all()
     if request.method == 'POST':
-        form = RoomForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('base:index')
-    return render(request, 'base/room_form.html', {'form': form})
+        topic = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic)
+        # form = RoomForm(request.POST)
+        # if form.is_valid():
+        #     room_item = form.save(commit=False)
+        #     room_item.host = request.user
+        #     room_item.save()
+        #     return redirect('base:index')
+        Room.objects.create(
+            host=request.user,
+            topic=topic,
+            name=request.POST.get('name'),
+            description=request.POST.get('description'),
+        )
+        return redirect("base:rooms")
+    return render(request, 'base/room_form.html', {'form': form, 'title': 'Create', 'topics': topics})
 
 
 @login_required
 def edit(request, pk):
     room_item = get_object_or_404(Room, pk=pk)
     form = RoomForm(instance=room_item)
+    topics = Topic.objects.all()
 
     if request.user != room_item.host:
         return HttpResponse("You are not allowed here!!")
 
     if request.method == 'POST':
-        form = RoomForm(request.POST, instance=room_item)
-        if form.is_valid():
-            form.save()
-            return redirect('base:index')
-
-    return render(request, 'base/room_form.html', {'form': form})
+        # form = RoomForm(request.POST, instance=room_item)
+        # if form.is_valid():
+        #     form.save()
+        #     return redirect('base:index')
+        topic = request.POST.get('topic')
+        topic, created = Topic.objects.get_or_create(name=topic)
+        room_item.name = request.POST.get('name')
+        room_item.description = request.POST.get('description')
+        room_item.topic = topic
+        return redirect('base:index')
+    return render(request, 'base/room_form.html', {
+        'form': form,
+        'title': 'Update',
+        'room': room_item,
+        'topics': topics,
+    })
 
 
 @login_required
