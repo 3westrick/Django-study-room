@@ -3,10 +3,9 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
-from .models import Room, Topic, RoomMessage
-from .forms import RoomForm, UserForm
-from django.contrib.auth.forms import UserCreationForm
+# from django.contrib.auth.models import User
+from .models import Room, Topic, RoomMessage, User
+from .forms import RoomForm, UserForm,MyUserCreationForm
 from django.db.models import Q
 
 
@@ -32,7 +31,7 @@ def edit_profile(request):
     user = request.user
     form = UserForm(instance=user)
     if request.method == "POST":
-        form = UserForm(request.POST, instance=user)
+        form = UserForm(request.POST, request.FILES, instance=user)
         if form.is_valid():
             form.save()
             return redirect("base:profile", user.id)
@@ -61,13 +60,13 @@ def signin(request):
     if request.user.is_authenticated:
         return redirect('base:index')
     if request.method == "POST":
-        username = request.POST.get('username').lower()
+        email = request.POST.get('email').lower()
         password = request.POST.get('password')
         try:
-            User.objects.get(username=username)
+            User.objects.get(email=email)
         except:
             messages.error(request, 'User does not exist')
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
         if user is not None:
             login(request, user)
             return redirect("base:index")
@@ -84,9 +83,9 @@ def signout(request):
 
 
 def signup(request):
-    form = UserCreationForm()
+    form = MyUserCreationForm()
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = MyUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
