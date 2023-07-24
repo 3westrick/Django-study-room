@@ -1,5 +1,5 @@
 # Django-study-room
-This is an web application based on Django rest Framework and React.js .
+This is an web application based on Django.
 
 <img width="1252" alt="room" src="https://github.com/3westrick/Django-study-room/assets/109426803/00027ab3-977b-4845-8f56-b432dcb7347d">
 
